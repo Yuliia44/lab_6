@@ -1,0 +1,103 @@
+using System;
+using System.Collections.Generic;
+
+class Sportsman
+{
+    public int Number { get; }
+    private bool HitTarget { get; set; }
+
+    public bool IsHitTarget => HitTarget;
+
+    public Sportsman(int number)
+    {
+        Number = number;
+        HitTarget = false;
+    }
+
+    public string GenerateEvent()
+    {
+        HitTarget = new Random().Next(2) == 1;
+        return HitTarget ? "Event1" : "Event2";
+    }
+
+    public void DisplayResult()
+    {
+        Console.WriteLine($"{(IsHitTarget ? "Спортсмен " + Number + " потрапив" : "Спортсмен " + Number + " не влучив")}");
+    }
+}
+
+class Judge
+{
+    private int NumSportsmen { get; }
+    private int HitCount { get; set; }
+
+    public Judge(int numSportsmen)
+    {
+        NumSportsmen = numSportsmen;
+        HitCount = 0;
+    }
+
+    public void Event1Handler()
+    {
+        HitCount++;
+    }
+
+    public void Event2Handler()
+    {
+    }
+
+    public void GenerateEvents(List<Sportsman> sportsmen)
+    {
+        foreach (var sportsman in sportsmen)
+        {
+            var eventName = sportsman.GenerateEvent();
+            if (eventName == "Event1")
+            {
+                Event1Handler();
+            }
+            else if (eventName == "Event2")
+            {
+                Event2Handler();
+            }
+
+            sportsman.DisplayResult();
+        }
+    }
+
+    public string CheckResults()
+    {
+        return HitCount > NumSportsmen / 2 ? "Event3" : "Event4";
+    }
+
+    public void DisplayFinalResult()
+    {
+        Console.WriteLine(HitCount > NumSportsmen / 2 ? "Молодці" : "Потрібно більше тренуватися");
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+        int numSportsmen = 6; 
+        var competitionProgram = new Program();
+        competitionProgram.RunCompetition(numSportsmen);
+    }
+
+    public void RunCompetition(int numSportsmen)
+    {
+        var sportsmen = new List<Sportsman>();
+        for (int i = 1; i <= numSportsmen; i++)
+        {
+            sportsmen.Add(new Sportsman(i));
+        }
+
+        var judge = new Judge(numSportsmen);
+        judge.GenerateEvents(sportsmen);
+        var resultEvent = judge.CheckResults();
+
+        judge.DisplayFinalResult();
+    }
+}
